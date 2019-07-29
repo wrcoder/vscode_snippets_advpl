@@ -1,0 +1,339 @@
+{
+	// Place your snippets for advpl here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+
+	"MyADVPL_Aviso":{
+		"prefix": "aviso",
+		"body": [
+			"If Upper(Alltrim(cUserName)) $ '${1:admin}'"
+			"\tAviso(FunName(),${2:Variavel},{'Ok'},3,'${3:Descricao}')"
+			"EndIf"
+		],
+		"description": "Aviso, informando texto para usuario admin"
+	},
+
+	"MyADVPL_CabeçalhoFonte":{
+		"prefix": "cab",
+		"body": [
+			"/*",
+			"=====================================================================================",
+			"|Programa: $TM_FILENAME_BASE    |Autor: Wanderley R. Neto                   |Data: $CURRENT_DATE/$CURRENT_MONTH/$CURRENT_YEAR|",
+			"=====================================================================================",
+			"|Descrição: ${1:Descricao}                                                               |",
+			"|                                                                                   |",
+			"=====================================================================================",
+			"|CONTROLE DE ALTERAÇÕES:                                                            |",
+			"=====================================================================================",
+			"|Programador          |Data       |Descrição                                        |",
+			"=====================================================================================",
+			"|                     |           |                                                 |",
+			"=====================================================================================",
+			"*/"],
+		"description": "Cabeçalho de Fonte com controle de alterações"
+	},
+
+	"MyADVPL_CabeçalhoRotina":{
+		"prefix": "cab",
+		"body": [
+			"/*",
+			"=====================================================================================",
+			"|Programa: $TM_FILENAME_BASE    |Autor: Wanderley R. Neto                   |Data: $CURRENT_DATE/$CURRENT_MONTH/$CURRENT_YEAR|",
+			"=====================================================================================",
+			"|Descrição: ${1:Descricao}                                                               |",
+			"|                                                                                   |",
+			"=====================================================================================",
+			"*/"],
+		"description": "Cabeçalho de Rotina simples."
+	},
+
+	"MyADVPL_Conout":{
+		"prefix": "conout",
+		"body": "Conout('${1:Rotina}'+' - '+DToC(dDataBase)+' '+Time()+'| ${2:Mensagem}')",
+		"description": "Insere Conout preparado com rotina, data e mensagem."
+	},
+
+	"MyADVPL_DbSeek":{
+		"prefix": "dbSeek",
+		"body": [
+			"If ${1:Tabela}->( DbSeek( cFil${1:Tabela} + ${2: Condição} ) )",
+			"\n\t$0\n",
+			"EndIf"],
+		"description": "Estrutura do Seek com alias e condição."
+	},
+
+	"MyADVPL_DbUseArea":{
+		"prefix": "dbUseArea",
+		"body": "dbUseArea(.T.,'TOPCONN',TCGENQRY(,,${1:cQuery}),${2:cAlias},${4:lShared}, ${3:lReadOnly})",
+		"description": "Template do DbUseArea. Informe a query e o alias. "
+	},
+
+	"MyADVPL_DbUseArea_comWhile":{
+		"prefix": "dbUseArea_While",
+		"body": [
+			"dbUseArea(.T.,'TOPCONN',TCGENQRY(,,${1:cQuery}),${2:cAlias},${3:lShared}, ${4:lReadOnly})",
+			"\nWhile ${2:cAlias}->( ! Eof() )",
+			"\n\t$0\n",
+			"\t${2:cAlias}->( DbSkip() )",
+			"End",
+			"\n${2:cAlias}->(dbCloseArea())"],
+		"description": "Template do DbUseArea com estrutura do While. Informe a query e o alias. "
+	},
+
+	"ADPVL_EmbeddedSQL":{
+		"prefix": "beginSQL",
+		"body": ["",
+		"BeginSql alias ${1:cAlias}",
+		"\tSELECT ${4:*}",
+		"\t  FROM %table:${2:Tabela}% ${2:Tabela}",
+		"\t WHERE ${2:Tabela}.%notDel% ",
+		"\t\tAND ${2:Tabela}.${3:CampoFilial} = %xfilial:${2:Tabela}%",
+		"\t ORDER BY %Order:${2:Tabela}%",
+		"EndSql\n\n${0}"],
+		"description": "Inclui trecho pronto para query baseada em Embedded SQL"
+	},
+	
+	"MyADVPL_FwMsExcel":{
+		"prefix": "FWMsExcel",
+		"body": ["Local oExcel\t\t\t\t:= FWMSEXCEL():New()",
+					"Local cQuery\t\t\t\t:= ''",
+					"Local cTmpAlias\t\t\t:= GetNextAlias()",
+					"Local cFilePath\t\t\t:= SuperGetMV('WS_PATHFR2',,'\\spool\\')",
+					"Local cLocalPath\t\t\t:= ''",
+					"Local cFileName\t\t\t:= ''",
+					"Local cHoraGer\t\t\t\t:= Time()",
+					"Local nTipoExc\t\t\t\t:= 0",
+					"Local nCpo\t\t\t\t\t:= 0",
+					"Local aStru\t\t\t\t\t:= {}",
+					"Local aTmp\t\t\t\t\t:= {}",
+					"Local xConteudo\n",
+					"cFileName := '{${1:Nome_Arquivo}_'+DToS(dDataBase)+'_'+SubStr(cHoraGer,1,2)+SubStr(cHoraGer,4,2)+SubStr(cHoraGer,7,2)+'.xml'",
+					"cFilePath := cFilePath+cFileName\n\n\n",
+					"If Pergunte('${2:Pergunte}')\n",
+					"\tcQuery += CRLF + \"Select ${0} \"\n",
+					"\tdbUseArea(.T.,'TOPCONN',TCGENQRY(,,cQuery),cTmpAlias,.F., .F.)\n",
+					"\taStru := (cTmpAlias)->(DbStruct())\n",
+					"\toExcel:AddWorkSheet(\"${3:Sheet1}\")",
+					"\toExcel:AddTable(\"${3:Sheet1}\", \"${4:Plan1}\")\n",
+					"\tIf (cTmpAlias)->(! Eof())\n",
+					"\t\tDbSelectArea('SX3')",
+					"\t\t// ----------------------------------------------------------------",
+					"\t\t// Monta Cabeçalho",
+					"\t\t// ----------------------------------------------------------------",
+					"\t\tFor nCpo := 1 To Len(aStru)\n",
+					"\t\t\tSX3->(DbSetOrder(2))",
+					"\t\t\tIf SX3->( DbSeek( aStru[nCpo,1] ) )\n",
+					"\t\t\t\t// ------------------------------------------------------------------------------",
+					"\t\t\t\t// 1 - CAracter\t\t2 - Numerico\t\t3 - Monetário\t\t4 - Data",
+					"\t\t\t\t// ------------------------------------------------------------------------------",
+					"\t\t\t\tDo Case",
+					"\t\t\t\t\tCase SX3->X3_TIPO == 'C'",
+					"\t\t\t\t\t\tnTipoExc := 1\n",
+					"\t\t\t\t\tCase SX3->X3_TIPO == 'N'",
+					"\t\t\t\t\t\t// Define valores monetários",
+					"\t\t\t\t\t\tnTipoExc := 3\n",					
+					"\t\t\t\t\tCase SX3->X3_TIPO == 'D'",
+					"\t\t\t\t\t\tnTipoExc := 4",
+					"\t\t\t\t\t\taStru[nCpo,2] := 'D'",
+					"\t\t\t\tEndCase\n",
+					"\t\t\t\toExcel:AddColumn(\"${3:Sheet1}\", \"${4:Plan1}\", AllTrim(X3Titulo()), 1, nTipoExc)\n",
+					"\t\t\tEndIf\n",
+					"\t\tNext nCpo\n",
+					"\t\toExcel:SetFrGeneralColor(\"#000000\")",
+					"\t\toExcel:SetBgGeneralColor(\"#FFFFFF\")\n",
+					"\t\t// -----------------------------------------------------------------------",
+					"\t\t// Carregando informações na planilha",
+					"\t\t// -----------------------------------------------------------------------",
+					"\t\tWhile (cTmpAlias)->( ! Eof())\n",
+					"\t\t\taTmp := {}",
+					"\t\t\tFor nCpo := 1 To Len(aStru)\n",
+					"\t\t\t\txConteudo := &('(cTmpAlias)->'+AllTrim(aStru[nCpo,1]))\n",
+					"\t\t\t\tIf aStru[nCpo,2] == 'D'",
+					"\t\t\t\t\txConteudo := SToD(xConteudo)",
+					"\t\t\t\tEndIf\n",
+					"\t\t\t\tAAdd(aTmp, xConteudo )",
+					"\t\t\t",
+					"\t\t\tNext nCpo\n",
+					"\t\t\toExcel:AddRow(\"${3:Sheet1}\", \"${4:Plan1}\", aTmp)\n",
+					"\t\t\t(cTmpAlias)->(dbSkip())",
+					"\t\tEnd\n",
+					"\t\t(cTmpAlias)->(DbCloseArea())",
+					"\t\toExcel:Activate()",
+					"\t\toExcel:GetXMLFile(cFilePath)\n",
+					"\t\tcLocalPath := cGetFile('','Selecione o path do arquivo de exportação',,'',.F., GETF_LOCALHARD + GETF_RETDIRECTORY )\n",
+					"\t\tIf !Empty(cLocalPath)",
+					"\t\t\tCpyS2T(cFilePath,cLocalPath)",
+					"\t\t\tShellExecute(\"Open\", \"excel\", '/r \"'+cLocalPath+cFileName+'\"', cLocalPath, 1)",
+					"\t\tEndIf",
+					"\tEndIf",
+					"EndIf"],
+		"description": "Mecanismo de geração de relatório em Excel."
+	},
+	"MyADVPL_ModelField":{
+		"prefix": "addField",
+		"body": "oModel:AddFields('MdField${1:Tabela}',,oStru${1:Tabela})",
+		"description": "Inclui uma Field no modelo."
+	},
+	
+	"MyADVPL_Filial":{
+		"prefix": "cFil",
+		"body": "Local cFil${1:Tabela}\t\t\t:= xFilial('${1:Tabela}')",
+		"description": "Inclui variável que armazena filial atual da tabela indicada."
+	},
+	
+	
+	"MyADVPL_For":{
+		"prefix": "for",
+		"body": [
+			"For ${1:nContador} := 1 To Len(${2:aArray})",
+			"\n\t$0\n",
+			"Next ${1:nContador}"],
+		"description":"Inclui comando for preparado para trabalhar com um array. Condiderando o tamanho máximo desse array."
+	},
+
+	"MyADVPL_Function":{
+		"prefix": "function",
+		"body": [
+			"#Include 'Protheus.ch'",
+			"\ncab$0",
+			"User Function ${1:Nome_Funcao}()",
+			"\n\nReturn Nil"],
+		"description": "Template de nova função com Include e gatilho pro cabeçalho."
+	},
+
+
+	"MyADVPL_FwMbrowse":{
+		"prefix": "FWmBrowse",
+		"body": [
+			"Local oBrowse\t\t\t:= Nil\n",
+			"Private aRotina\t\t:= MenuDef()\n",
+			"dbSelectArea('${1:Tabela}')",
+			"${1:Tabela}->(dbSetOrder(${2:Indice}))\n",
+			"oBrowse:= FWMBrowse():New()",
+			"oBrowse:SetAlias('${1:Tabela}')",
+			"oBrowse:SetDescription('${3:Descricao}')\n",
+			"oBrowse:Activate()"],
+		"description":"Inclui a rotina para instanciar uma nova mBrowse com chamada à menudef."
+	},
+
+
+	"MyADVPL_GETAREA":{
+		"prefix": "getarea",
+		"body": [
+			"Local aAreas\t\t:= {;",
+			"\t\t\t\t\t\t\t ${1:Table}->(GetArea()),;",
+			"\t\t\t\t\t\t\t GetArea()}"
+			],
+		"description": "Criação da estrutura de RestArea baseado em array de areas."
+	},
+
+	"MyADVPL_HELP":{
+		"prefix": "Help",
+		"body": 
+			"Help(,,'${1:cID}',, '${2:cMsg}',${3:nLinha})",
+		"description": "Retorna um help para informação ao usuário"
+	},
+
+	"MyADVPL_ModelGrid":{
+		"prefix": "addGrid",
+		"body": [
+			"oModel:AddGrid('MdGrid${1:Tabela}','MdField${2:TabelaPai}',oStru${1:Tabela})",
+			"oModel:GetModel('MdGrid${1:Tabela}'):SetDescription('${3:Descricao}')",
+			"oModel:GetModel('MdGrid${1:Tabela}'):SetOptional(${4:lOpcional})"
+		],
+		"description": "Inclui uma Grid no modelo."
+	},
+
+	"MyADVPL_JSON_DESER":{
+		"prefix": "json_deserialize",
+		"body": "FwJSONDeserialize(${1:cJson},@${2:oObjeto})",
+		"description": "Cria linha de desserialização de objeto no formato JSON"
+	},
+
+	"MyADVPL_JSON_SER":{
+		"prefix": "json_serialize",
+		"body": "${1:cJson} := FWJsonSerialize(${2:oObjeto})",
+		"description": "Cria linha de serialização de string no formato JSON"
+	},
+
+	"MyADVPL_MENUDEF":{
+		"prefix": "menudef",
+		"body": [
+			"cab${0}",
+			"Static Function MenuDef()\n",
+			"Local aRotina\t\t:= {}\n",
+			"ADD OPTION aRotina Title '${1:Titulo}'  Action 'VIEWDEF.${2:Fonte}' OPERATION ${3:Operacao} ACCESS 0\n",
+			"Return aRotina"
+		],
+		"description": "Cria a rotina de Menudef"
+	},
+
+	"MyADVPL_MODELNEW":{
+		"prefix": "model_new",
+		"body": [
+			"oModel := MPFormModel():New('${1:ID_MODEL}',${2:bPreMd},${3:bPosMd},${4:bCommit},${5:bCancel})",
+			"oMOdel:SetDescription('${6:Descricao}')"],
+		"description": "Cria objeto de Model"
+	},
+	
+	"MyADVPL_MsgYesNo":{
+		"prefix": "MsgYesNo",
+		"body": ["If MsgYesNo('${1:Texto}', '${2:Titulo}')",
+			"\t${0}",
+			"EndIf",
+		],
+		"description": "Cria caixa de processamento"
+	},
+
+	"MyADVPL_PROCESSA":{
+		"prefix": "processa",
+		"body": "Processa(${1:bAtion},${2:cTitulo},${3:cMsg},${4:lAborta})",
+		"description": "Cria caixa de processamento"
+	},
+
+	"MyADVPL_RESTAREA":{
+		"prefix": "restarea",
+		"body": "Aeval( ${1:aAreas}, {|x| RestArea(x) })${0}",
+		"description": "Criação da estrutura de RestArea baseado em array de areas."
+	},
+
+	"MyADVPL_Struct":{
+		"prefix": "struct",
+		"body": "Local oStru${1:Tabela}\t\t\t:= FwFormStruct(${2:Tipo_Estrutura},'${1:Tabela}')",
+		"description": "Adiciona variavel de controle de estrutura para MVC"
+	},
+
+	"MyADVPL_Query":{
+		"prefix": "cQuery",
+		"body": "cQuery += CRLF + \" $0 \"",
+		"description": "Montagem de query baseada em string usando a variável cQuery."
+	},
+
+	"MyADVPL_While": {
+		"prefix": "while",
+		"body": [
+			"While ${1:cAlias}->( ! Eof() )",
+			"\n\t$0\n",
+			"\t${1:cAlias}->( DbSkip() )",
+			"End",
+			"\n${1:cAlias}->(dbCloseArea())"],
+		"description": "While - Com Alias"
+	},
+
+	"MyADVPL_WN_Coment":{
+		"prefix": "WN",
+		"body": "// #WN${CURRENT_YEAR}${CURRENT_MONTH}${CURRENT_DATE} - ${0}",
+		"description": "Construção da Tag de comentário utilizada na CCAB"
+	}
+
+}
