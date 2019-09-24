@@ -105,7 +105,7 @@
 				"Local cTo				:= AllTrim(SuperGetMv('${1:Parametro}',,'${2:email_default}'))",
 				"Local cAssunto			:= ''",
 				"Local cBody				:= ''",
-				"Local cError			:= ""\n",
+				"Local cError			:= ''\n",
 				"If Empty(cServer);",
 				"\t\t.Or. Empty(cFrom);",
 				"\t\t.Or. Empty(cPswd)\n",
