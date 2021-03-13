@@ -1,16 +1,25 @@
 {
-
-	"MyAdvpl_Aviso":{
+	"MyADVPL_Aviso":{
 		"prefix": "aviso",
 		"body": [
-			"If Upper(Alltrim(cUserName)) $ '${1:admin}'"
-			"	Aviso(FunName(),${2:Variavel},{'Ok'},3,'${3:Descricao}')"
+			"If Upper(Alltrim(cUserName)) $ '${1:admin}'",
+			"\tAviso(FunName(),${2:Variavel},{'Ok'},3,'${3:Descricao}')${4:cVAriavel}${5:MeuConteudo}",
 			"EndIf"
 		],
 		"description": "Aviso, informando texto para usuario admin"
 	},
 
-	"MyAdvpl_CabeçalhoFonte":{
+	"MyADVPL_Comment":{
+		"prefix": "--",
+		"body": [
+			"// ------------------------------------------------------------------------------------------",
+			"// -- ${0: Comentário}",
+			"// ------------------------------------------------------------------------------------------"
+		],
+		"description": "Inclui separador para destaque de comentário"
+	},
+
+	"MyADVPL_CabeçalhoFonte":{
 		"prefix": "cab",
 		"body": [
 			"/*",
@@ -30,7 +39,7 @@
 		"description": "Cabeçalho de Fonte com controle de alterações"
 	},
 
-	"MyAdvpl_CabeçalhoRotina":{
+	"MyADVPL_CabeçalhoRotina":{
 		"prefix": "cab",
 		"body": [
 			"/*",
@@ -44,28 +53,68 @@
 		"description": "Cabeçalho de Rotina simples."
 	},
 
-	"MyAdvpl_Conout":{
+	"MyADVPL_Class":{
+		"prefix": "class",
+		"body": [,
+			"Class ${1:Nome}\n",
+			"\tData ${2:Propriedade}\n",
+			"\tMethod ${3:Metodo}() Constructor\n",
+			"EndClass",
+		],
+		"description": "Insere template de criação de uma nova classe."
+	},
+
+	"MyADVPL_ClassMethod":{
+		"prefix": "method",
+		"body": [,
+			"Method ${1:Nome}() Class ${2:Classe}\n",
+			"\t${0}\n",
+			"Return Self",
+		],
+		"description": "Insere template de criação de uma nova classe."
+	},
+
+	"MyADVPL_Conout":{
 		"prefix": "conout",
 		"body": "Conout('${1:Rotina}'+' - '+DToC(dDataBase)+' '+Time()+'| ${2:Mensagem}')",
 		"description": "Insere Conout preparado com rotina, data e mensagem."
 	},
 
-	"MyAdvpl_DbSeek":{
+	"MyADVPL_CSV":{
+		"prefix": "impCSV",
+		"body": ["",
+			"Local oCSV\t\t\t\t:= impCSV():New()",
+			"Local ${1:aCab}\t\t\t:= {}",
+			"Local ${2:aDados}\t\t:= {}\n",
+			"// Informa o arquivo a ser processado",
+			"oCSV:SelArquivo()\n",
+			"If !Empty(oCSV:cArquivo)\n",
+			"\tIf oCSV:Importar()\n",
+			"\t\t${1:aCab}\t\t:= oCSV:aColunas",
+			"\t\t${2:aDados}\t:= oCSV:${2:aDados}\n",
+			"\t\tProcessa({|| ProcCarga(${1:aCab}, ${2:aDados})},'${3:Titulo}','${4:Carregando registros}',.F.)\n",
+			"\tEndIf",
+			"EndIf",
+		],
+		"description": "Rotina de importação de CSV via componente"
+	},
+
+	"MyADVPL_DbSeek":{
 		"prefix": "dbSeek",
 		"body": [
 			"If ${1:Tabela}->( DbSeek( cFil${1:Tabela} + ${2: Condição} ) )",
 			"\n\t$0\n",
 			"EndIf"],
-		"description": "Estrutura do DbSeek com alias e condição."
+		"description": "Estrutura do Seek com alias e condição."
 	},
 
-	"MyAdvpl_DbUseArea":{
+	"MyADVPL_DbUseArea":{
 		"prefix": "dbUseArea",
-		"body": "dbUseArea(.T.,'TOPCONN',TCGENQRY(,,${1:cQuery}),${2:cAlias},${4:lShared}, ${3:lReadOnly})",
+		"body": "dbUseArea(.T.,'TOPCONN',TCGENQRY(,,${1:cQuery}),${2:cAlias},${3:lShared}, ${4:lReadOnly})",
 		"description": "Template do DbUseArea. Informe a query e o alias. "
 	},
 
-	"MyAdvpl_DbUseArea_comWhile":{
+	"MyADVPL_DbUseArea_comWhile":{
 		"prefix": "dbUseArea_While",
 		"body": [
 			"dbUseArea(.T.,'TOPCONN',TCGENQRY(,,${1:cQuery}),${2:cAlias},${3:lShared}, ${4:lReadOnly})",
@@ -76,22 +125,17 @@
 			"\n${2:cAlias}->(dbCloseArea())"],
 		"description": "Template do DbUseArea com estrutura do While. Informe a query e o alias. "
 	},
-
-	"ADPVL_EmbeddedSQL":{
-		"prefix": "beginSQL",
-		"body": ["",
-		"BeginSql alias ${1:cAlias}",
-		"\tSELECT ${4:*}",
-		"\t  FROM %table:${2:Tabela}% ${2:Tabela}",
-		"\t WHERE ${2:Tabela}.%notDel% ",
-		"\t\tAND ${2:Tabela}.${3:CampoFilial} = %xfilial:${2:Tabela}%",
-		"\t ORDER BY %Order:${2:Tabela}%",
-		"EndSql\n\n${0}"],
-		"description": "Inclui trecho pronto para query baseada em Embedded SQL"
-	},
-
+	"MyAdvpl_EmailComp":{
+		"prefix": "envNotific",
+		"body": ["oNotif	:= EmailNotif():New(AllTrim(${1:cTo}),;",
+		"\t\t\t\t\t\t\t'${2:cTitle}',;",
+		"\t\t\t\t\t\t\t${3:cBody})",
+		"oNotif:Enviar()"
+		],
+		"description":"utiliza componente de envio de email para disparar notificação"
+	}
 	"MyAdvpl_EnvNotif":{
-		"prefix": "envNotif",
+		"prefix": "Notifica",
 		"body": [
 				"#Include 'Ap5Mail.ch'\n",
 				"Static Function envNotif()\n",
@@ -173,7 +217,20 @@
 		"description": "Template de rotina de envio de notificações via email utilizando os parametros padrões de configuração de SMTP."
 	},
 
-	"MyAdvpl_FwMsExcel":{
+	"ADPVL_EmbeddedSQL":{
+		"prefix": "beginSQL",
+		"body": ["",
+		"BeginSql alias ${1:cAlias}",
+		"\tSELECT ${4:*}",
+		"\t  FROM %table:${2:Tabela}% ${2:Tabela}",
+		"\t WHERE ${2:Tabela}.%notDel% ",
+		"\t\tAND ${2:Tabela}.${3:CampoFilial} = %xfilial:${2:Tabela}%",
+		"\t ORDER BY %Order:${2:Tabela}%",
+		"EndSql\n\n${0}"],
+		"description": "Inclui trecho pronto para query baseada em Embedded SQL"
+	},
+	
+	"MyADVPL_FwMsExcel":{
 		"prefix": "FWMsExcel",
 		"body": ["Local oExcel\t\t\t\t:= FWMSEXCEL():New()",
 					"Local cQuery\t\t\t\t:= ''",
@@ -247,32 +304,31 @@
 					"\t\tEndIf",
 					"\tEndIf",
 					"EndIf"],
-		"description": "Mecanismo de geração de relatório em Excel baseado em query."
+		"description": "Mecanismo de geração de relatório em Excel."
 	},
-	
-	"MyAdvpl_ModelField":{
+	"MyADVPL_ModelField":{
 		"prefix": "addField",
 		"body": "oModel:AddFields('MdField${1:Tabela}',,oStru${1:Tabela})",
 		"description": "Inclui uma Field no modelo."
 	},
 	
-	"MyAdvpl_Filial":{
+	"MyADVPL_Filial":{
 		"prefix": "cFil",
 		"body": "Local cFil${1:Tabela}\t\t\t:= xFilial('${1:Tabela}')",
 		"description": "Inclui variável que armazena filial atual da tabela indicada."
 	},
 	
 	
-	"MyAdvpl_For":{
+	"MyADVPL_For":{
 		"prefix": "for",
 		"body": [
 			"For ${1:nContador} := 1 To Len(${2:aArray})",
 			"\n\t$0\n",
 			"Next ${1:nContador}"],
-		"description":"Inclui comando 'for' preparado para trabalhar com um array. Condiderando o tamanho máximo desse array."
+		"description":"Inclui comando for preparado para trabalhar com um array. Condiderando o tamanho máximo desse array."
 	},
 
-	"MyAdvpl_Function":{
+	"MyADVPL_Function":{
 		"prefix": "function",
 		"body": [
 			"#Include 'Protheus.ch'",
@@ -283,7 +339,7 @@
 	},
 
 
-	"MyAdvpl_FwMbrowse":{
+	"MyADVPL_FwMbrowse":{
 		"prefix": "FWmBrowse",
 		"body": [
 			"Local oBrowse\t\t\t:= Nil\n",
@@ -298,24 +354,24 @@
 	},
 
 
-	"MyAdvpl_GETAREA":{
+	"MyADVPL_GETAREA":{
 		"prefix": "getarea",
 		"body": [
 			"Local aAreas\t\t:= {;",
 			"\t\t\t\t\t\t\t ${1:Table}->(GetArea()),;",
 			"\t\t\t\t\t\t\t GetArea()}"
 			],
-		"description": "Criação da estrutura de GetArea baseado em array de areas."
+		"description": "Criação da estrutura de RestArea baseado em array de areas."
 	},
 
-	"MyAdvpl_HELP":{
+	"MyADVPL_HELP":{
 		"prefix": "Help",
 		"body": 
 			"Help(,,'${1:cID}',, '${2:cMsg}',${3:nLinha})",
 		"description": "Retorna um help para informação ao usuário"
 	},
 
-	"MyAdvpl_ModelGrid":{
+	"MyADVPL_ModelGrid":{
 		"prefix": "addGrid",
 		"body": [
 			"oModel:AddGrid('MdGrid${1:Tabela}','MdField${2:TabelaPai}',oStru${1:Tabela})",
@@ -325,19 +381,19 @@
 		"description": "Inclui uma Grid no modelo."
 	},
 
-	"MyAdvpl_JSON_DESER":{
+	"MyADVPL_JSON_DESER":{
 		"prefix": "json_deserialize",
 		"body": "FwJSONDeserialize(${1:cJson},@${2:oObjeto})",
 		"description": "Cria linha de desserialização de objeto no formato JSON"
 	},
 
-	"MyAdvpl_JSON_SER":{
+	"MyADVPL_JSON_SER":{
 		"prefix": "json_serialize",
 		"body": "${1:cJson} := FWJsonSerialize(${2:oObjeto})",
 		"description": "Cria linha de serialização de string no formato JSON"
 	},
 
-	"MyAdvpl_MENUDEF":{
+	"MyADVPL_MENUDEF":{
 		"prefix": "menudef",
 		"body": [
 			"cab${0}",
@@ -349,7 +405,7 @@
 		"description": "Cria a rotina de Menudef"
 	},
 
-	"MyAdvpl_MODELNEW":{
+	"MyADVPL_MODELNEW":{
 		"prefix": "model_new",
 		"body": [
 			"oModel := MPFormModel():New('${1:ID_MODEL}',${2:bPreMd},${3:bPosMd},${4:bCommit},${5:bCancel})",
@@ -357,40 +413,66 @@
 		"description": "Cria objeto de Model"
 	},
 	
-	"MyAdvpl_MsgYesNo":{
+	"MyADVPL_MsgYesNo":{
 		"prefix": "MsgYesNo",
 		"body": ["If MsgYesNo('${1:Texto}', '${2:Titulo}')",
 			"\t${0}",
 			"EndIf",
 		],
-		"description": "Abre caixa de confirmação Yes|No na tela."
+		"description": "Cria caixa de processamento"
 	},
 
-	"MyAdvpl_PROCESSA":{
+	"MyADVPL_PROCESSA":{
 		"prefix": "processa",
 		"body": "Processa(${1:bAtion},${2:cTitulo},${3:cMsg},${4:lAborta})",
 		"description": "Cria caixa de processamento"
 	},
 
-	"MyAdvpl_RESTAREA":{
+	"MyADVPL_ParamBox":{
+		"prefix": "paramBox",
+		"body":["If ParamBox(${1:aPergs}, ${2:cTitulo}, @${3:aRet})",
+		"\t${0}",
+		"EndIf"],
+		"description": "Cria caixa de perguntas 'ParamBox'"
+	},
+
+	"MyADVPL_ParamBox_MsGet":{
+		"prefix": "paramBox_get",
+		"body":"AAdd(${1:aPergs}, {1, '${2:Descrição}',${3:Inicializador},'${4:@!}','${5:Validação}',${6:F3},'${7:When}',${8:Tamanho},${9:lObrigatorio}})",
+		"description": "Adiciona pergunta de texto livre a um ParamBox"
+	},
+
+	"MyADVPL_ParamBox_Combo":{
+		"prefix": "paramBox_combo",
+		"body":"AAdd(${1:aPergs}, {2, '${2:Descrição}',${3:nOpcaoInicial},${4:aOpcoes},${5:nTamanho},'${6:Validação}',${7:lObrigatorio}})",
+		"description": "Adiciona pergunta de combo a um ParamBox"
+	},
+
+	"MyADVPL_RESTAREA":{
 		"prefix": "restarea",
 		"body": "Aeval( ${1:aAreas}, {|x| RestArea(x) })${0}",
 		"description": "Criação da estrutura de RestArea baseado em array de areas."
 	},
 
-	"MyAdvpl_Struct":{
+	"MyADVPL_SetProperty":{
+		"prefix": "setproperty",
+		"body": "${1:oStruct}:SetProperty('${2:Campo}', ${3|MODEL_FIELD_VALID,MODEL_FIELD_WHEN,MODEL_FIELD_OBRIGAT,MODEL_FIELD_INIT,MODEL_FIELD_NOUPD|}, FwBuildFeature( ${4|STRUCT_FEATURE_VALID,STRUCT_FEATURE_WHEN,STRUCT_FEATURE_INIPAD|},\"${5:Expressao}\" ))",
+		"description": "Atribui propriedade a um campo."
+	},
+
+	"MyADVPL_Struct":{
 		"prefix": "struct",
 		"body": "Local oStru${1:Tabela}\t\t\t:= FwFormStruct(${2:Tipo_Estrutura},'${1:Tabela}')",
 		"description": "Adiciona variavel de controle de estrutura para MVC"
 	},
 
-	"MyAdvpl_Query":{
+	"MyADVPL_Query":{
 		"prefix": "cQuery",
 		"body": "cQuery += CRLF + \" $0 \"",
 		"description": "Montagem de query baseada em string usando a variável cQuery."
 	},
 
-	"MyAdvpl_While": {
+	"MyADVPL_While": {
 		"prefix": "while",
 		"body": [
 			"While ${1:cAlias}->( ! Eof() )",
@@ -398,7 +480,13 @@
 			"\t${1:cAlias}->( DbSkip() )",
 			"End",
 			"\n${1:cAlias}->(dbCloseArea())"],
-		"description": "While - Com Alias e DbSkip"
+		"description": "While - Com Alias"
+	},
+
+	"MyADVPL_Way2_Coment":{
+		"prefix": "W2",
+		"body": "// #W2${CURRENT_YEAR}${CURRENT_MONTH}${CURRENT_DATE} - ${0}",
+		"description": "Construção da Tag de comentário utilizada na CCAB"
 	}
 
 }
