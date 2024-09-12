@@ -1,0 +1,126 @@
+{
+	"Select Simples": {
+		"prefix": "sqlSelectSimples",
+		"body": [
+			"${0}SELECT ${3: campos, }*  ",
+			"  FROM ${2:TableName}010 ",
+			" Where D_E_L_E_T_ = '' ",
+			"${4: And }"
+		],
+		"description": "Select simples dos registros de uma tabela qualquer definida pelo usuário"
+	},
+	"Select Join": {
+		"prefix": "sqlSelectJoin",
+		"body": [
+			"${0}Select ${7: campos, }*  ",
+			"  From ${1:TableName}010 ${1: Alias}",
+			" Inner Join ${2:TableName}010  ${2: AliasJoin} ",
+			"    On ${3:campo1} = ${4:campo2}",
+			"   ${5: And } ",
+			" Where ${1: Alias}.D_E_L_E_T_ = '' ",
+			"   And ${2: Alias}.D_E_L_E_T_ = '' ",
+			"${6: And }"
+		],
+		"description": "Select simples dos registros de uma tabela qualquer definida pelo usuário"
+	},
+	"Ranking - Ultimos Registros": {
+		"prefix": "sqlTopRanking",
+		"body": [
+			"${0}SELECT TOP ${1: numberRegs} * ${3: } ",
+			"  FROM ${2:TableName}010 ",
+			" Where D_E_L_E_T_ = '' ",
+			" Order By R_E_C_N_O_ Desc"
+		],
+		"description": "Select dos N ultimos registros de uma tabela qualquer definida pelo usuário"
+	},
+	"SX3": {
+		"prefix": "sqlSX3",
+		"body": [
+			"${0}SELECT * ${3: } ",
+			"  FROM SX3010 ",
+			" Where D_E_L_E_T_ = '' ",
+			"   And X3_ARQUIVO in ('${1:TableName}') ",
+			"   And X3_CAMPO in ('${2:FieldName}') ",
+			" Order By X3_ORDEM"
+		],
+		"description": "Select dos registros com a definição dos campos do sistema"
+	},
+	"SX6": {
+		"prefix": "sqlSX6",
+		"body": [
+			"select X6_VAR, X6_CONTEUD, X6_DESCRIC+X6_DESC1+X6_DESC2 DESCRICAO from SX6010",
+			" where X6_VAR in ('${1:ParamName}')" 
+			"   And D_E_L_E_T_ = '' " 
+		],
+		"description": "Select dos registros com a definição dos parametros do sistema"
+	},
+	"SX7": {
+		"prefix": "sqlSX7",
+		"body": [
+			"Select * ${0} ",
+			"  From SX7010 ",
+			" Where D_E_L_E_T_ = '' ",
+			"   And ${2|X7_CAMPO,X7_CDOMIN,X7_REGRA|} in ('${3:ValueSearched}') ",
+			" Order By X7_CAMPO, X7_SEQUENC"
+		],
+		"description": "Select dos registros com a definição dos gatilhos do sistema"
+	},
+	"SIX": {
+		"prefix": "sqlSIX",
+		"body": [
+			"select * from SIX010",
+			" where INDICE = '${1:TableName}'" 
+			"   And D_E_L_E_T_ = '' " 
+		],
+		"description": "Select dos registros com a definição dos indices do sistema"
+	},
+	"Alçada de Compras": {
+		"prefix": "compras_alcada",
+		"description": "Exibe a alçada de pedidos por aprovador",
+		"body": [
+			"\tSELECT  C7_FILIAL,C7_NUM, C7_ITEM, C7_CC, CR_XNUMFLG,CR_NIVEL, AK_NOME, ",
+			"\t CASE CR_STATUS ",
+			"\t WHEN '01' THEN 'Aguardando nível anterior'",
+			"\t WHEN '02' THEN 'Pendente'",
+			"\t WHEN '03' THEN 'Liberado'",
+			"\t WHEN '04' THEN 'Bloqueado'",
+			"\t WHEN '05' THEN 'Liberado outro usuário'",
+			"\t WHEN '06' THEN 'Rejeitado'",
+			"\t END STATUS,",
+			"\t C7_EMISSAO, CR_AVISO, CR_DATALIB,CR.*",
+			"\t  FROM SCR010 CR",
+			"\t INNER JOIN DBM010 BM ",
+			"\t    ON CR.CR_FILIAL = BM.DBM_FILIAL ",
+			"\t   AND CR.CR_NUM = BM.DBM_NUM ",
+			"\t   AND CR.CR_USER = BM.DBM_USER",
+			"\t   AND CR.CR_GRUPO = DBM_GRUPO",
+			"\t INNER JOIN SC7010 C7 ",
+			"\t    ON C7.C7_FILIAL = BM.DBM_FILIAL ",
+			"\t   AND C7.C7_NUM = BM.DBM_NUM ",
+			"\t   AND C7.C7_ITEM = BM.DBM_ITEM",
+			"\t INNER JOIN SAK010 AK",
+			"\t    ON AK_USER = CR_USER",
+			"\t   AND AK_COD = CR_APROV",
+			"\t  /*Inner join SW2010 W2",
+			"\t on W2_FILIAL = C7_FILIAL",
+			"\tand W2_PO_SIGA = C7_NUM*/",
+			"\t WHERE CR.CR_NUM in ('${1:Pedido}') AND",
+			"\t       CR.D_E_L_E_T_ = ''",
+			"\t   AND BM.D_E_L_E_T_ = ''",
+			"\t   AND C7.D_E_L_E_T_ = ''",
+			"\t   AND AK.D_E_L_E_T_ = ''",
+			"\t --AND W2.D_E_L_E_T_ = ''",
+			"\t --and CR_STATUS = '02' --Pendente",
+			"\t   and CR_STATUS = '03' --Aprovado",
+				"\t	  AND CR_DATALIB > '20210701'",
+			"\t /*AND CR.CR_NIVEL = (",
+				"\t	   SELECT MAX(CR2.CR_NIVEL) NIVEL ",
+				"\t		 FROM SCR010 CR2 ",
+				"\t		WHERE CR2.CR_FILIAL = CR.CR_FILIAL ",
+				"\t		  AND CR2.CR_NUM = CR.CR_NUM ",
+				"\t		  AND CR2.CR_GRUPO = CR.CR_GRUPO ",
+				"\t		  AND CR2.D_E_L_E_T_ = ' ') */",
+			"\t ORDER BY AK_NOME, CR_NUM, C7_ITEM",
+		]
+	},
+}
