@@ -1,9 +1,10 @@
 {
+
 	"MyADVPL_Aviso":{
 		"prefix": "aviso",
 		"body": [
-			"If Upper(Alltrim(cUserName)) $ '${1:admin}'",
-			"\tAviso(FunName(),${2:Variavel},{'Ok'},3,'${3:Descricao}')${4:cVAriavel}${5:MeuConteudo}",
+			"If Upper(Alltrim(cUserName)) $ '${1:admin}'"
+			"\tAviso(FunName(),${2:Variavel},{'Ok'},3,'${3:Descricao}')${4:cVAriavel}${5:MeuConteudo}"
 			"EndIf"
 		],
 		"description": "Aviso, informando texto para usuario admin"
@@ -12,8 +13,6 @@
 	"MyADVPL_Comment":{
 		"prefix": "--",
 		"body": [
-			"// ------------------------------------------------------------------------------------------",
-			"// -- ${0: Comentário}",
 			"// ------------------------------------------------------------------------------------------"
 		],
 		"description": "Inclui separador para destaque de comentário"
@@ -55,10 +54,13 @@
 
 	"MyADVPL_Class":{
 		"prefix": "class",
-		"body": [,
+		"body": [
+			"#Include 'tlpp-core.th'\n\n",
+			"protheusdoc${4}",
 			"Class ${1:Nome}\n",
-			"\tData ${2:Propriedade}\n",
-			"\tMethod ${3:Metodo}() Constructor\n",
+			"\tPrivate Data ${2:Propriedade} as ${3:Tipo}\n",
+			"\tPublic Method New() as Object\n",
+			"\t${5}\n",
 			"EndClass",
 		],
 		"description": "Insere template de criação de uma nova classe."
@@ -66,7 +68,7 @@
 
 	"MyADVPL_ClassMethod":{
 		"prefix": "method",
-		"body": [,
+		"body": [
 			"Method ${1:Nome}() Class ${2:Classe}\n",
 			"\t${0}\n",
 			"Return Self",
@@ -80,25 +82,6 @@
 		"description": "Insere Conout preparado com rotina, data e mensagem."
 	},
 
-	"MyADVPL_CSV":{
-		"prefix": "impCSV",
-		"body": ["",
-			"Local oCSV\t\t\t\t:= impCSV():New()",
-			"Local ${1:aCab}\t\t\t:= {}",
-			"Local ${2:aDados}\t\t:= {}\n",
-			"// Informa o arquivo a ser processado",
-			"oCSV:SelArquivo()\n",
-			"If !Empty(oCSV:cArquivo)\n",
-			"\tIf oCSV:Importar()\n",
-			"\t\t${1:aCab}\t\t:= oCSV:aColunas",
-			"\t\t${2:aDados}\t:= oCSV:${2:aDados}\n",
-			"\t\tProcessa({|| ProcCarga(${1:aCab}, ${2:aDados})},'${3:Titulo}','${4:Carregando registros}',.F.)\n",
-			"\tEndIf",
-			"EndIf",
-		],
-		"description": "Rotina de importação de CSV via componente"
-	},
-
 	"MyADVPL_DbSeek":{
 		"prefix": "dbSeek",
 		"body": [
@@ -110,7 +93,7 @@
 
 	"MyADVPL_DbUseArea":{
 		"prefix": "dbUseArea",
-		"body": "dbUseArea(.T.,'TOPCONN',TCGENQRY(,,${1:cQuery}),${2:cAlias},${3:lShared}, ${4:lReadOnly})",
+		"body": "dbUseArea(.T.,'TOPCONN',TCGENQRY(,,${1:cQuery}),${2:cAlias},${4:lShared}, ${3:lReadOnly})",
 		"description": "Template do DbUseArea. Informe a query e o alias. "
 	},
 
@@ -125,17 +108,22 @@
 			"\n${2:cAlias}->(dbCloseArea())"],
 		"description": "Template do DbUseArea com estrutura do While. Informe a query e o alias. "
 	},
-	"MyAdvpl_EmailComp":{
-		"prefix": "envNotific",
-		"body": ["oNotif	:= EmailNotif():New(AllTrim(${1:cTo}),;",
-		"\t\t\t\t\t\t\t'${2:cTitle}',;",
-		"\t\t\t\t\t\t\t${3:cBody})",
-		"oNotif:Enviar()"
+	
+	"MyAdvpl_NewNotif":{
+		"prefix":"mailNotif",
+		"body":[
+			"Local oNotif\t\t:= Nil\n",
+			"oNotif := EmailNotif():New(AllTrim(${1:cTo}),;",
+			"\t\t\t\t\t\t\t${2:cAssunto},;",
+			"\t\t\t\t\t\t\t${3:cBody})",
+			"${4:oNotif:Anexar(cFile)}",
+			"oNotif:Enviar()${0}",
 		],
-		"description":"utiliza componente de envio de email para disparar notificação"
-	}
+		"description":"Utiliza o componento EmailNotif para disparar uma notificação por email. Recebe os parametros Assunto, Body e Anexo"
+	},
+
 	"MyAdvpl_EnvNotif":{
-		"prefix": "Notifica",
+		"prefix": "envNotif",
 		"body": [
 				"#Include 'Ap5Mail.ch'\n",
 				"Static Function envNotif()\n",
@@ -220,19 +208,25 @@
 	"ADPVL_EmbeddedSQL":{
 		"prefix": "beginSQL",
 		"body": ["",
-		"BeginSql alias ${1:cAlias}",
+		"BeginSql alias ${1:cAlias}",
 		"\tSELECT ${4:*}",
 		"\t  FROM %table:${2:Tabela}% ${2:Tabela}",
-		"\t WHERE ${2:Tabela}.%notDel% ",
+		"\t WHERE ${2:Tabela}.%notDel% ",
 		"\t\tAND ${2:Tabela}.${3:CampoFilial} = %xfilial:${2:Tabela}%",
-		"\t ORDER BY %Order:${2:Tabela}%",
+		"\t ORDER BY %Order:${2:Tabela}%",
 		"EndSql\n\n${0}"],
 		"description": "Inclui trecho pronto para query baseada em Embedded SQL"
+	},
+
+	"ADPVL_LoadModel":{
+		"prefix": "FwLoadModel",
+		"body": "${1:oModel} := FwLoadModel('${2:PROGRAM_FILE}')\n${0}",
+		"description": "Carrega modelo de dados de fonte MVC"
 	},
 	
 	"MyADVPL_FwMsExcel":{
 		"prefix": "FWMsExcel",
-		"body": ["Local oExcel\t\t\t\t:= FWMSEXCEL():New()",
+		"body": ["Local oExcel\t\t\t\t:= FwMsExcelXlsx():New()",
 					"Local cQuery\t\t\t\t:= ''",
 					"Local cTmpAlias\t\t\t:= GetNextAlias()",
 					"Local cFilePath\t\t\t:= SuperGetMV('WS_PATHFR2',,'\\spool\\')",
@@ -244,7 +238,7 @@
 					"Local aStru\t\t\t\t\t:= {}",
 					"Local aTmp\t\t\t\t\t:= {}",
 					"Local xConteudo\n",
-					"cFileName := '{${1:Nome_Arquivo}_'+DToS(dDataBase)+'_'+SubStr(cHoraGer,1,2)+SubStr(cHoraGer,4,2)+SubStr(cHoraGer,7,2)+'.xml'",
+					"cFileName := '${1:Nome_Arquivo}_'+DToS(dDataBase)+'_'+SubStr(cHoraGer,1,2)+SubStr(cHoraGer,4,2)+SubStr(cHoraGer,7,2)+'.xlsx'",
 					"cFilePath := cFilePath+cFileName\n\n\n",
 					"If Pergunte('${2:Pergunte}')\n",
 					"\tcQuery += CRLF + \"Select ${0} \"\n",
@@ -306,6 +300,7 @@
 					"EndIf"],
 		"description": "Mecanismo de geração de relatório em Excel."
 	},
+
 	"MyADVPL_ModelField":{
 		"prefix": "addField",
 		"body": "oModel:AddFields('MdField${1:Tabela}',,oStru${1:Tabela})",
@@ -325,6 +320,18 @@
 			"For ${1:nContador} := 1 To Len(${2:aArray})",
 			"\n\t$0\n",
 			"Next ${1:nContador}"],
+		"description":"Inclui comando for preparado para trabalhar com um array. Condiderando o tamanho máximo desse array."
+	},
+	
+	"MyADVPL_For_MVC":{
+		"prefix": "for_mvc",
+		"body": [
+			"For ${1:nLinha} := 1 To ${2:oMdGrid}:Length()",
+			"\n\t${2:oMdGrid}:SetLine(${1:nLinha})\n",
+			"\tIf !${2:oMdGrid}:IsDeleted()",
+			"\n\t\t$0",
+			"\n\tEndIf\n",
+			"Next ${1:nLinha}"],
 		"description":"Inclui comando for preparado para trabalhar com um array. Condiderando o tamanho máximo desse array."
 	},
 
@@ -381,6 +388,12 @@
 		"description": "Inclui uma Grid no modelo."
 	},
 
+	"MyADVPL_JSON":{
+		"prefix": "json_new",
+		"body": "Local ${1:jObj} := JsonObject():New()",
+		"description": "Cria linha de desserialização de objeto no formato JSON"
+	},
+
 	"MyADVPL_JSON_DESER":{
 		"prefix": "json_deserialize",
 		"body": "FwJSONDeserialize(${1:cJson},@${2:oObjeto})",
@@ -413,6 +426,12 @@
 		"description": "Cria objeto de Model"
 	},
 	
+	"MyADVPL_MsgRun":{
+		"prefix": "MsgRun",
+		"body": "MsgRun(${1:Texto},${2:Título}, {|| ${3:Rotina} })",
+		"description": "Cria caixa de processamento"
+	},
+	
 	"MyADVPL_MsgYesNo":{
 		"prefix": "MsgYesNo",
 		"body": ["If MsgYesNo('${1:Texto}', '${2:Titulo}')",
@@ -422,36 +441,58 @@
 		"description": "Cria caixa de processamento"
 	},
 
+	"MyADVPL_OpenQuery":{
+		"prefix": "openQuery",
+		"body": "${2:cAlias}  := MPSysOpenQuery(${1:cQuery})${0}",
+		"description": "Template do MPSysOpenQuery. Informe a query e o alias. "
+	},
+
+	"MyADVPL_OpenQuery_comWhile":{
+		"prefix": "openQuery",
+		"body": ["${2:cAlias} := MPSysOpenQuery(${1:cQuery})${0}",
+		"\nWhile (${2:cAlias})->( ! Eof() )",
+		"\n\t$0\n",
+		"\t(${2:cAlias})->( DbSkip() )",
+		"End",
+		"\n(${2:cAlias})->(dbCloseArea())"],
+		"description": "Template do MPSysOpenQuery. Informe a query e o alias. "
+	},
+
 	"MyADVPL_PROCESSA":{
 		"prefix": "processa",
 		"body": "Processa(${1:bAtion},${2:cTitulo},${3:cMsg},${4:lAborta})",
 		"description": "Cria caixa de processamento"
 	},
 
-	"MyADVPL_ParamBox":{
-		"prefix": "paramBox",
-		"body":["If ParamBox(${1:aPergs}, ${2:cTitulo}, @${3:aRet})",
-		"\t${0}",
-		"EndIf"],
-		"description": "Cria caixa de perguntas 'ParamBox'"
-	},
-
-	"MyADVPL_ParamBox_MsGet":{
-		"prefix": "paramBox_get",
-		"body":"AAdd(${1:aPergs}, {1, '${2:Descrição}',${3:Inicializador},'${4:@!}','${5:Validação}',${6:F3},'${7:When}',${8:Tamanho},${9:lObrigatorio}})",
-		"description": "Adiciona pergunta de texto livre a um ParamBox"
-	},
-
-	"MyADVPL_ParamBox_Combo":{
-		"prefix": "paramBox_combo",
-		"body":"AAdd(${1:aPergs}, {2, '${2:Descrição}',${3:nOpcaoInicial},${4:aOpcoes},${5:nTamanho},'${6:Validação}',${7:lObrigatorio}})",
-		"description": "Adiciona pergunta de combo a um ParamBox"
+	"MyADVPL_PROTHEUSDOC":{
+		"prefix": "protheusdoc",
+		"body": [
+			"/*/{Protheus.doc} ${1:FunctionName}",
+			"${2: Description}",
+			"@type ${3|function,method|}",
+			"@version 12.1.${4:2310}",
+			"@author Wanderley R. Neto",
+			"@since $CURRENT_MONTH/$CURRENT_DATE/$CURRENT_YEAR",
+			"/*/"
+		],
+		"description": "Cabeçalho no modelo ProtheusDoc."
 	},
 
 	"MyADVPL_RESTAREA":{
 		"prefix": "restarea",
 		"body": "Aeval( ${1:aAreas}, {|x| RestArea(x) })${0}",
 		"description": "Criação da estrutura de RestArea baseado em array de areas."
+	},
+
+	"MyADVPL_SetEnv":{
+		"prefix": "prepareRpcSetEnv",
+		"body": [
+			"#Include 'TbiConn.ch'\n",
+			"RpcSetEnv('${1:Empresa}','${2:Filial}',${3:'usuario'},${4:'password'},${5:'MODULO'},,${6:aTables})",
+			"\t${0:/****** COMANDOS *************/}",
+			"RpcClearEnv()",
+		],
+		"description": "Estrutura de abertura de ambiente."
 	},
 
 	"MyADVPL_SetProperty":{
@@ -472,6 +513,27 @@
 		"description": "Montagem de query baseada em string usando a variável cQuery."
 	},
 
+	"MyADVPL_TryCatch":{
+		"prefix": "TryCatch",
+		"body": [
+			"Try\n",
+			"\t${0}\n",
+			"Catch oError",
+			"\tConout('$TM_FILENAME_BASE - '+DToC(dDataBase)+' '+Time()+'| ${1:Mensagem}: '+oError:ErrorStack)",
+			"\tIf !IsBlind()",
+			"\t\tMsgAlert('${1:Mensagem}. Detalhes:'+oError:ErrorStack)",
+			"\tEndIf",
+			"EndTry",
+		],
+		"description": "Montagem de query baseada em string usando a variável cQuery."
+	},
+
+	"MyADVPL_xMoeda":{
+		"prefix": "xMoeda",
+		"body": "${1:nVConvertido} := xMoeda(${2:nValor},${3:nMoedaOrigem},${4:nMoedaDestino},${5:dDataTaxa})",
+		"description": "Função para conversão de valores em moedas diferentes"
+	},
+
 	"MyADVPL_While": {
 		"prefix": "while",
 		"body": [
@@ -483,9 +545,9 @@
 		"description": "While - Com Alias"
 	},
 
-	"MyADVPL_Way2_Coment":{
-		"prefix": "W2",
-		"body": "// #W2${CURRENT_YEAR}${CURRENT_MONTH}${CURRENT_DATE} - ${0}",
+	"MyADVPL_WN_Coment":{
+		"prefix": "WN",
+		"body": "// #WN${CURRENT_YEAR}${CURRENT_MONTH}${CURRENT_DATE} - ${0}",
 		"description": "Construção da Tag de comentário utilizada na CCAB"
 	}
 
